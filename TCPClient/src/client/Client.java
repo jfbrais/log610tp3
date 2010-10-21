@@ -1,3 +1,20 @@
+/******************************************************
+ Projet :		TCPClient
+ Auteurs :		Claude Bouchard
+ 				Jean-François Brais-Villemur
+ 				Gabriel Desmarais
+ Codes perm. :	BOUC12018902
+ 				BRAJ14088901
+ 				DESG24078908
+ Classe :		Client.java			 
+ Création  :	2010-10-21
+ Dern. mod : 	2010-10-21
+ *******************************************************
+ Historique des modifications
+ *******************************************************
+ 2010-10-21 : 	Début du travail pratique
+ *******************************************************/
+
 package client;
 
 import java.awt.BorderLayout;
