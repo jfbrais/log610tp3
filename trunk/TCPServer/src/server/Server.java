@@ -25,35 +25,46 @@
 
 package server;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
+import java.net.Socket;
 
-public class Server implements Runnable {
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+@SuppressWarnings("serial")
+public class Server extends JFrame implements Runnable {
 	private final static String DEFAULT_IP = "127.0.0.1";
 	private final static int DEFAULT_PORT = 10000;
-	private final static int DEFAULT_CONNECTIONS = 5;
 
+	// GUI
+	private JLabel text, textClient;
+	private JPanel panel;
+	
 	private boolean listening = false;
 	
+	private String receivedText = null;
 	private String IP = null;
 	private int port;
 	
 	private ServerSocket serverSocket;
+	private Socket clientSocket;
+
+	private BufferedReader in;
 		
 	private Thread thread;
-	
-	private String inputLine;
-	private String outputLine;
 
 	// Constructor that permits the specification of the port number.
 	/**
 	 * @param aPort
 	 * @param maxConnections
 	 */
-	public Server(String aIP, int aPort, int maxConnections) {
+	public Server(String aIP, int aPort) {
 		super();
 		
 		if (!aIP.equals(""))
@@ -61,16 +72,22 @@ public class Server implements Runnable {
 		else
 			IP = DEFAULT_IP;
 		
-		port = aPort;
-
-		if (maxConnections <= 0)
-			maxConnections = DEFAULT_CONNECTIONS;
-		
-		System.out.println("Server initialized..");
+		if (aPort <= 0)
+			port = DEFAULT_PORT;
+		else
+			port = aPort;
 		
 		thread = new Thread(this);
 		
-		System.out.println("Thread : " + thread.getName() + " | " + thread.getId());
+		text = new JLabel("Text received from client:");
+	    textClient = new JLabel("");
+
+	    panel = new JPanel();
+	    panel.setLayout(new BorderLayout());
+	    panel.setBackground(Color.white);
+	    getContentPane().add(panel);
+	    panel.add("North", text);
+	    panel.add("Center", textClient);
 	}
 
 	// Returns the IP address of the server.
@@ -113,7 +130,7 @@ public class Server implements Runnable {
 		start();
 		
 		try {
-			serverSocket = new ServerSocket(serverPort);
+			serverSocket = new ServerSocket(serverPort);			
 			System.out.println("Server started..");
 			System.out.println("IP   : " + IP);
 			System.out.println("Port : " + port);
@@ -129,16 +146,36 @@ public class Server implements Runnable {
 	 * 
 	 */
 	public void acceptConnections() {
-		int i = 0;
 		System.out.println("Accepting clients..");
+		try {
+			clientSocket = serverSocket.accept();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		
 		// Accept clients until limit is reached.
 		while (listening)
 		{				
-			i++;
+			try {
+				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				receivedText = in.readLine();
+				textClient.setText(receivedText);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}	
 	}
 
+	public void closeConnections() {
+		try {
+			in.close();
+			clientSocket.close();
+			serverSocket.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * 
 	 */
