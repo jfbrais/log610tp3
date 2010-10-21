@@ -1,26 +1,18 @@
 /******************************************************
- Compagnie :	Transax Technologies
- Projet :		KeyExchangeServer
- Auteurs :		Jean-François Brais-Villemur, Analyste Réseau
- 				Marc-André Laporte, Programmeur Analyste
- Superviseur :	Alain Boucher, CTO
+ Projet :		TCPServer
+ Auteurs :		Claude Bouchard
+ 				Jean-François Brais-Villemur
+ 				Gabriel Desmarais
+ Codes perm. :	BOUC12018902
+ 				BRAJ14088901
+ 				DESG24078908
  Classe :		Server.java			 
- Création  :	2010-03-08
- Dern. mod : 	2010-03-23
+ Création  :	2010-10-21
+ Dern. mod : 	2010-10-21
  *******************************************************
  Historique des modifications
  *******************************************************
- 2010-03-08 : 	Début du projet
- 
- 2010-03-08 : 	Ajout d'un tableau de sockets.
- 				Ajout des I/O Streams.
- 				Tests.
- 				
- 2010-03-17 :	Révisé la gestion des connexions
- 				Ajout d'une interface graphique
- 				
- 2010-03-23 :	Le serveur ne garde maintenant qu'une
-				collection de Clients, contenant les sockets, etc.
+ 2010-10-21 : 	Début du travail pratique
  *******************************************************/
 
 package server;
@@ -55,7 +47,7 @@ public class Server extends JFrame implements Runnable {
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
 
-	private BufferedReader in;
+	private BufferedReader in = null;
 		
 	private Thread thread;
 
@@ -78,6 +70,8 @@ public class Server extends JFrame implements Runnable {
 			port = aPort;
 		
 		thread = new Thread(this);
+		// Starts the server with the given IP:Port.
+		startServer(getIP(), getPort());
 		
 		text = new JLabel("Text received from client:");
 	    textClient = new JLabel("");
@@ -125,19 +119,16 @@ public class Server extends JFrame implements Runnable {
 	 * @param serverIP
 	 * @param serverPort
 	 */
-	public void startServer(String serverIP, int serverPort) {
-		// Starts the thread that will accept connections.
-		start();
-		
+	public void startServer(String serverIP, int serverPort) {		
 		try {
-			serverSocket = new ServerSocket(serverPort);			
-			System.out.println("Server started..");
-			System.out.println("IP   : " + IP);
-			System.out.println("Port : " + port);
+			serverSocket = new ServerSocket(serverPort);
 		} catch (IOException e) {
 			System.out.println("Couldn't listen on port : " + serverPort);
 			System.exit(-1);
-		}	
+		}
+		
+		// Starts the thread that will accept connections.
+		start();
 	}
 	
 	// Accepts the number of connections specified in parameters.
@@ -149,6 +140,7 @@ public class Server extends JFrame implements Runnable {
 		System.out.println("Accepting clients..");
 		try {
 			clientSocket = serverSocket.accept();
+			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -157,20 +149,23 @@ public class Server extends JFrame implements Runnable {
 		while (listening)
 		{				
 			try {
-				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				receivedText = in.readLine();
 				textClient.setText(receivedText);
 			} catch (IOException e) {
+				setListeningState(false);
+				closeConnections();
 				e.printStackTrace();
-			}
+			} 
 		}	
 	}
 
 	public void closeConnections() {
 		try {
-			in.close();
-			clientSocket.close();
-			serverSocket.close();
+			if (in != null || clientSocket != null) {
+				in.close();
+				clientSocket.close();
+				serverSocket.close();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -185,6 +180,10 @@ public class Server extends JFrame implements Runnable {
 	
 	@Override
 	public void run() {
+		// Sets the server to listen mode.
+		setListeningState(true);
 		
+		// Starts accepting connections from client.
+		acceptConnections();
 	}
 }
