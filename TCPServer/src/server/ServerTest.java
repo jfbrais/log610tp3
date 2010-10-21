@@ -19,10 +19,27 @@
 
 package server;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
 public class ServerTest {
 	public static void main(String[] args) {
 		// Initializes the server with parameters passed (portNumber).
-		Server server = new Server("", 10000, 5);
+		Server server = new Server("", -1);
+		
+		// GUI elements.
+        WindowListener l = new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                        System.exit(0);
+                }
+        };
+
+		server.setTitle("Server Program");
+        server.addWindowListener(l);
+        server.pack();
+	    server.setSize(200, 200);
+        server.setVisible(true);
 		
 		// Starts the server with the given IP:Port.
 		server.startServer(server.getIP(), server.getPort());
