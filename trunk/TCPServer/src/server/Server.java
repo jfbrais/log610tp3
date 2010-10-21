@@ -53,8 +53,8 @@ public class Server extends JFrame implements Runnable {
 
 	// Constructor that permits the specification of the port number.
 	/**
+	 * @param aIP
 	 * @param aPort
-	 * @param maxConnections
 	 */
 	public Server(String aIP, int aPort) {
 		super();
