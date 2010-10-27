@@ -11,6 +11,9 @@ import java.net.Socket;
 public class WorkerRunnable implements Runnable {
 	protected Socket clientSocket = null;
     protected String serverText   = null;
+    
+    private String temp = "";
+    private byte[] bytes = new byte[60];
 
     public WorkerRunnable(Socket clientSocket, String serverText) {
         this.clientSocket = clientSocket;
@@ -24,11 +27,23 @@ public class WorkerRunnable implements Runnable {
             InputStream input  = clientSocket.getInputStream();
             OutputStream output = clientSocket.getOutputStream();
             
+            int i=0;
+            
+            while (i<60) {
+            	temp += input.read();
+            	i++;
+            }
+            	
+            System.out.println(temp);
+            
+            // Send requested file.
             File myFile = new File ("test.html");
             byte [] fileData  = new byte [(int)myFile.length()];
+            
             FileInputStream fis = new FileInputStream(myFile);
             BufferedInputStream bis = new BufferedInputStream(fis);
             bis.read(fileData,0,fileData.length);
+            
             output.write(fileData,0,fileData.length);
             output.flush();
             

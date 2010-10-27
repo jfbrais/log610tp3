@@ -19,9 +19,7 @@ package server;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -40,14 +38,11 @@ public class Server extends JFrame implements Runnable {
 	
 	private boolean listening = false;
 	
-	private String receivedText = null;
 	private String IP = null;
 	private int port;
 	
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
-
-	private BufferedReader in = null;
 		
 	private Thread thread;
 
@@ -128,9 +123,7 @@ public class Server extends JFrame implements Runnable {
 		// Starts the thread that will accept connections.
 		start();
 	}
-	
-	// Accepts the number of connections specified in parameters.
-	// If the int passed is <= to 0, default value will be used.
+
 	/**
 	 * 
 	 */
@@ -152,11 +145,12 @@ public class Server extends JFrame implements Runnable {
 		}
 	}
 
+	/**
+	 * 
+	 */
 	public void closeConnections() {
 		try {
-			if (in != null || clientSocket != null) {
-				in.close();
-				clientSocket.close();
+			if (serverSocket != null) {
 				serverSocket.close();
 			}
 		} catch (IOException e) {
