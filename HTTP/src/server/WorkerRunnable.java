@@ -7,13 +7,21 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.regex.Pattern;
+
+import regex.RegEX;
 
 public class WorkerRunnable implements Runnable {
+	private String P_GET = "GET";
+	private String P_FILE = "( )(.*)( )";
+	
 	protected Socket clientSocket = null;
     protected String serverText   = null;
     
+    private byte[] buffer = new byte[1024];
+        
+    private Pattern p;
     private String temp = "";
-    private byte[] bytes = new byte[60];
 
     public WorkerRunnable(Socket clientSocket, String serverText) {
         this.clientSocket = clientSocket;
@@ -27,13 +35,19 @@ public class WorkerRunnable implements Runnable {
             InputStream input  = clientSocket.getInputStream();
             OutputStream output = clientSocket.getOutputStream();
             
-            int i=0;
+            StringBuffer out = new StringBuffer();
+            RegEX regex = new RegEX();
             
-            while (i<60) {
-            	temp += input.read();
-            	i++;
-            }
-            	
+            int n = input.read(buffer);
+            out.append(new String(buffer, 0, n));
+            System.out.println(out.toString() + "\n\n\n\n");
+            
+            p = Pattern.compile(P_GET,Pattern.CASE_INSENSITIVE);
+            temp = regex.findInURL(out.toString(), p);
+            System.out.println(temp);
+            
+            p = Pattern.compile(P_FILE,Pattern.CASE_INSENSITIVE);
+            temp = (regex.findInURL(out.toString(), p)).trim();
             System.out.println(temp);
             
             // Send requested file.
