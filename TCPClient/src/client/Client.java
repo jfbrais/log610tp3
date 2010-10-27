@@ -63,7 +63,7 @@ public class Client extends JFrame implements ActionListener {
 	
 	public void connect() {
 		try {
-			socket = new Socket("127.0.0.1", 10000);
+			socket = new Socket("10.196.113.130", 10000);
 			
 			out = new PrintWriter(socket.getOutputStream(), true);
 		} catch (UnknownHostException e) {
