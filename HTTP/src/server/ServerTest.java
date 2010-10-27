@@ -29,15 +29,14 @@ public class ServerTest {
 		// GUI elements.
         WindowListener l = new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                	server.closeConnections();
                     System.exit(0);
                 }
         };
 
-		server.setTitle("Server Program");
+		server.setTitle("Multithreaded HTTP server");
         server.addWindowListener(l);
         server.pack();
-	    server.setSize(200, 200);
+	    server.setSize(500, 500);
         server.setVisible(true);
 	}
 }

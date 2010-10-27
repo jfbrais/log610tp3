@@ -35,7 +35,7 @@ public class Server extends JFrame implements Runnable {
 	private final static int DEFAULT_PORT = 10000;
 
 	// GUI
-	private JLabel text, textClient;
+	private JLabel client;
 	private JPanel panel;
 	
 	private boolean listening = false;
@@ -73,15 +73,13 @@ public class Server extends JFrame implements Runnable {
 		// Starts the server with the given IP:Port.
 		startServer(getIP(), getPort());
 		
-		text = new JLabel("Text received from client:");
-	    textClient = new JLabel("");
+		client = new JLabel("Client");
 
 	    panel = new JPanel();
 	    panel.setLayout(new BorderLayout());
 	    panel.setBackground(Color.white);
 	    getContentPane().add(panel);
-	    panel.add("North", text);
-	    panel.add("Center", textClient);
+	    panel.add("North", client);
 	}
 
 	// Returns the IP address of the server.
@@ -138,25 +136,20 @@ public class Server extends JFrame implements Runnable {
 	 */
 	public void acceptConnections() {
 		System.out.println("Accepting clients..");
-		try {
-			clientSocket = serverSocket.accept();
-			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
 		
 		// Accept clients until limit is reached.
 		while (listening)
-		{				
+		{
 			try {
-				receivedText = in.readLine();
-				textClient.setText(receivedText);
+				clientSocket = serverSocket.accept();
 			} catch (IOException e) {
 				setListeningState(false);
 				closeConnections();
 				e.printStackTrace();
-			} 
-		}	
+			}
+			
+			new Thread(new WorkerRunnable(clientSocket, "HTTP Server 1.0")).start();
+		}
 	}
 
 	public void closeConnections() {
