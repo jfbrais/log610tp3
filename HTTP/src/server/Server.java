@@ -121,7 +121,7 @@ public class Server extends JFrame implements Runnable {
 		}
 		
 		// Starts the thread that will accept connections.
-		start();
+		thread.start();
 	}
 
 	/**
@@ -156,13 +156,6 @@ public class Server extends JFrame implements Runnable {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	/**
-	 * 
-	 */
-	private void start() {
-		thread.start();
 	}
 	
 	@Override
