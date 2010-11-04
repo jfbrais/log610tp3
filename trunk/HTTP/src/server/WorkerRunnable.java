@@ -19,9 +19,20 @@ public class WorkerRunnable implements Runnable {
     protected String serverText   = null;
     
     private byte[] buffer = new byte[1024];
+    private byte[] fileData;
+    
+    private File file;
+    private FileInputStream fis;
+    private BufferedInputStream bis;
         
     private Pattern p;
+    
     private String temp = "";
+    private String response = "";
+    private String path = "";
+    private String CRLF = "\n";
+    
+    private int status;
 
     public WorkerRunnable(Socket clientSocket, String serverText) {
         this.clientSocket = clientSocket;
@@ -30,7 +41,7 @@ public class WorkerRunnable implements Runnable {
 
     public void run() {
         try {
-        	System.out.println("New connection >> " + clientSocket.getInetAddress() + ":" + clientSocket.getPort() + "\n");
+        	System.out.println("\nNew connection >> " + clientSocket.getInetAddress() + ":" + clientSocket.getPort() + "\n---");
         	
             InputStream input  = clientSocket.getInputStream();
             OutputStream output = clientSocket.getOutputStream();
@@ -40,32 +51,55 @@ public class WorkerRunnable implements Runnable {
             
             int n = input.read(buffer);
             out.append(new String(buffer, 0, n));
-            System.out.println(out.toString() + "\n\n\n\n");
             
+            // Vérifier si c'est une requête GET.
             p = Pattern.compile(P_GET,Pattern.CASE_INSENSITIVE);
             temp = regex.findInURL(out.toString(), p);
-            System.out.println(temp);
             
+            // Extraire le fichier demandé.
             p = Pattern.compile(P_FILE,Pattern.CASE_INSENSITIVE);
             temp = (regex.findInURL(out.toString(), p)).trim();
-            System.out.println(temp);
             
-            // Send requested file.
-            File myFile = new File ("test.html");
-            byte [] fileData  = new byte [(int)myFile.length()];
+            path += "doc\\" + temp.substring(1);
+        	System.out.println(path);
             
-            FileInputStream fis = new FileInputStream(myFile);
-            BufferedInputStream bis = new BufferedInputStream(fis);
+            if (new File(path).exists())
+            	status = 200;
+            else
+            	status = 404;
+
+            switch (status) {
+	            case 200:
+	            	response = "HTTP/1.1 200 OK" + CRLF;
+	            	break;
+	            case 404:
+	            	response = "HTTP/1.1 404 Not Found" + CRLF;
+	            	
+	            	path = "doc\\filenotfound.html";
+	            	break;
+            }
+            
+            file = new File(path);
+            fileData  = new byte[(int)file.length()];
+            
+            fis = new FileInputStream(file);
+            bis = new BufferedInputStream(fis);
             bis.read(fileData,0,fileData.length);
+        	
+        	response += "Server: " + serverText + CRLF;
+        	response += "Content-Length: " + String.valueOf((int)file.length()) + CRLF;
+        	response += "Content-Type: text/html" + CRLF;
+        	response += CRLF;
+        	
+        	System.out.println("\n" + response);
             
-            output.write(fileData,0,fileData.length);
-            output.flush();
+            output.write(response.getBytes());
+        	output.write(fileData, 0, fileData.length);
+        	output.flush();
             
-            //output.write(("HTTP/1.1 200 OK\n\nWorkerRunnable: " + this.serverText + " - " + time + "").getBytes());
             output.close();
             input.close();
         } catch (IOException e) {
-            //report exception somewhere.
             e.printStackTrace();
         }
     }
