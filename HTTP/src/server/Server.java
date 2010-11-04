@@ -141,7 +141,7 @@ public class Server extends JFrame implements Runnable {
 				e.printStackTrace();
 			}
 			
-			new Thread(new WorkerRunnable(clientSocket, "HTTP Server 1.0")).start();
+			new Thread(new WorkerRunnable(clientSocket, "JOEL (unix)")).start();
 		}
 	}
 
