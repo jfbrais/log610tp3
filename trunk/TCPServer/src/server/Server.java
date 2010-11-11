@@ -161,7 +161,7 @@ public class Server extends JFrame implements Runnable {
 
 	public void closeConnections() {
 		try {
-			if (in != null || clientSocket != null) {
+			if (in != null && clientSocket != null) {
 				in.close();
 				clientSocket.close();
 				serverSocket.close();
@@ -171,9 +171,6 @@ public class Server extends JFrame implements Runnable {
 		}
 	}
 	
-	/**
-	 * 
-	 */
 	private void start() {
 		thread.start();
 	}
