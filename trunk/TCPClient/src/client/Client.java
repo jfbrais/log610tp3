@@ -34,18 +34,20 @@ import javax.swing.JTextField;
 
 @SuppressWarnings("serial")
 public class Client extends JFrame implements ActionListener {
-	
 	private Socket socket;
-	
 	private PrintWriter out;
 	
-	JLabel text, clicked;
-	JButton button;
-	JPanel panel;
-	JTextField textField;
-
+	private String ip, port;
 	
-	public Client() {
+	private JLabel text;
+	private JButton button;
+	private JPanel panel;
+	private JTextField textField;
+
+	public Client(String ip, String port) {
+		this.ip = ip;
+		this.port = port;
+		
 		text = new JLabel("Text to send to server:");
 	    textField = new JTextField(20);
 	    button = new JButton("Send !");
@@ -63,7 +65,7 @@ public class Client extends JFrame implements ActionListener {
 	
 	public void connect() {
 		try {
-			socket = new Socket("10.196.113.130", 10000);
+			socket = new Socket(ip, Integer.parseInt(port));
 			
 			out = new PrintWriter(socket.getOutputStream(), true);
 		} catch (UnknownHostException e) {
@@ -79,8 +81,10 @@ public class Client extends JFrame implements ActionListener {
 	
 	public void closeConnections() {
 		try {
-			out.close();
-			socket.close();
+			if (out != null && socket != null) {
+				out.close();
+				socket.close();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
