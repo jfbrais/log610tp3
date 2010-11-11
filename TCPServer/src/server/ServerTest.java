@@ -29,7 +29,7 @@ public class ServerTest {
 		// GUI elements.
         WindowListener l = new WindowAdapter() {
                 public void windowClosing(WindowEvent e) {
-                	server.closeConnections();
+                	server.setListeningState(false);
                     System.exit(0);
                 }
         };
