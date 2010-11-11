@@ -71,7 +71,7 @@ public class Server extends JFrame implements Runnable {
 		
 		thread = new Thread(this);
 		// Starts the server with the given IP:Port.
-		startServer(getIP(), getPort());
+		startServer(getPort());
 		
 		text = new JLabel("Text received from client:");
 	    textClient = new JLabel("");
@@ -114,12 +114,11 @@ public class Server extends JFrame implements Runnable {
 		return listening;
 	}
 	
-	// Creates a SocketServer at the specified IP:Port.
+	// Creates a SocketServer at the specified port.
 	/**
-	 * @param serverIP
 	 * @param serverPort
 	 */
-	public void startServer(String serverIP, int serverPort) {		
+	public void startServer(int serverPort) {		
 		try {
 			serverSocket = new ServerSocket(serverPort);
 		} catch (IOException e) {
@@ -131,18 +130,13 @@ public class Server extends JFrame implements Runnable {
 		start();
 	}
 	
-	// Accepts the number of connections specified in parameters.
-	// If the int passed is <= to 0, default value will be used.
-	/**
-	 * 
-	 */
 	public void acceptConnections() {
 		System.out.println("Accepting clients..");
 		try {
 			clientSocket = serverSocket.accept();
 			in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
 		// Accept clients until limit is reached.
@@ -156,7 +150,9 @@ public class Server extends JFrame implements Runnable {
 				closeConnections();
 				e.printStackTrace();
 			} 
-		}	
+		}
+		
+		closeConnections();
 	}
 
 	public void closeConnections() {
