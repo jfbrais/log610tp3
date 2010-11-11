@@ -22,12 +22,18 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 public class ClientTest {
-
+	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		final Client client = new Client();
+		if (args.length == 0) {
+			args = new String[2];
+			args[0] = "127.0.0.1";
+			args[1] = "10000";
+		}			
+		
+		final Client client = new Client(args[0], args[1]);
 		
 		// GUI elements.
         WindowListener l = new WindowAdapter() {
