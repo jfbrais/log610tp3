@@ -74,7 +74,7 @@ public class Client extends JFrame implements ActionListener {
 			e.printStackTrace();
 		}
 	}
-
+	
 	private void sendText(String t) {
 		out.println(t);
 	}
