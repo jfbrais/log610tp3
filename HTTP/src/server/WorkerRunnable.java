@@ -30,7 +30,7 @@ public class WorkerRunnable implements Runnable {
     private String temp = "";
     private String response = "";
     private String path = "";
-    private String CRLF = "\n";
+    private String CRLF = "\r\n";
     
     private int status;
 
